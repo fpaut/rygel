@@ -14,6 +14,7 @@ librygel_server_2_0_la_SOURCES = \
 
 librygel_server_2_0_la_VALAFLAGS = \
 	-H rygel-server.h --library=rygel-server-2.0 \
+	--gir=Rygel-2.0.gir \
 	$(LIBRYGEL_SERVER_DEPS_VALAFLAGS) \
 	$(RYGEL_COMMON_LIBRYGEL_CORE_VALAFLAGS) \
 	$(RYGEL_COMMON_VALAFLAGS)
@@ -34,6 +35,26 @@ librygel_server_2_0_la_LDFLAGS = \
 vapidir = $(VAPIDIR)
 vapi_DATA = rygel-server-2.0.vapi rygel-server-2.0.deps
 
-rygel-server.h rygel-server-2.0.vapi: librygel_server_2_0_la_vala.stamp
+rygel-server.h rygel-server-2.0.vapi Rygel-2.0.gir: librygel_server_2_0_la_vala.stamp
 
-EXTRA_DIST = rygel-server.h rygel-server-2.0.vapi rygel-server-2.0.deps
+-include $(INTROSPECTION_MAKEFILE)
+INTROSPECTION_GIRS=
+INTROSPECTION_SCANNER_ARGS=
+INTROSPECTION_COMPILER_ARGS= -l librygel-server-2.0.so.1 --includedir=$(builddir)/../librygel-core
+$(srcdir)/RygelServer-2.0.gir: $(srcdir)/Rygel-2.0.gir
+	$(AM_V_GEN)$(SED) -e 's,Rygel\.,RygelServer.,g' \
+		-e 's,namespace name="Rygel",namespace name="RygelServer",g' \
+		-e 's,RygelServer\.Plugin,RygelCore.Plugin,g' \
+		-e 's,RygelServer\.MediaDevice,RygelCore.MediaDevice,g' \
+		-e 's,<package name="rygel-server-2.0"/>,<include name="RygelCore" version="2.0"/>\n<package name="rygel-server-2.0"/>,' \
+		$< >$@
+GIRS = RygelServer-2.0.gir
+
+girdir=$(datadir)/gir-1.0
+dist_gir_DATA = $(GIRS)
+
+typelibdir = $(libdir)/girepository-1.0
+nodist_typelib_DATA = $(GIRS:.gir=.typelib)
+
+
+EXTRA_DIST = rygel-server.h rygel-server-2.0.vapi rygel-server-2.0.deps RygelServer-2.0.gir
