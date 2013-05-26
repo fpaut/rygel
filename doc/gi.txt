@@ -1,0 +1,9 @@
+- How to use default implementations from python or provide a default for all
+  virtual functions with specific overides?
+  class Foo(GObject.Object, namespace.MyInterface):
+    def do_thing(self):
+        pass
+    # everything else from MyInteface throws NotImplemented exception
+- How to implement non-trivial r/w properties?
+- How to implement properties returning GStrv?
+- Get rid of libgee/generics in public API
